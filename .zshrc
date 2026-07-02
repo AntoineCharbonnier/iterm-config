@@ -1,92 +1,135 @@
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/zukangor/.oh-my-zsh
+# ============================================================
+# .zshrc — Chargé à chaque shell interactif
+# ============================================================
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# ZSH_THEME="robbyrussell"
-# ZSH_THEME="bullet-train"
-ZSH_THEME="agnoster"
+# Oh-My-Zsh
+export ZSH=/Users/antoine/.oh-my-zsh
+ZSH_THEME="powerlevel9k/powerlevel9k"
 
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
-
-# User configuration
-
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-# export MANPATH="/usr/local/man:$MANPATH"
+plugins=(
+  git
+  zsh-autosuggestions
+  yarn
+  web-search
+  jsontools
+  node
+  sudo
+  docker
+)
 
 source $ZSH/oh-my-zsh.sh
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+# iTerm2 shell integration
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+# zsh-syntax-highlighting (Apple Silicon)
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+# ============================================================
+# POWERLEVEL9K
+# ============================================================
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir rbenv vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%f"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+local user_symbol="$"
+if [[ $(print -P "%#") =~ "#" ]]; then
+    user_symbol="#"
+fi
+POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%{%B%F{black}%K{yellow}%} ${user_symbol}%{%b%f%k%F{yellow}%} %{%f%}"
 
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='red'
+POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 
+# Colorise iTerm2 tabs
+echo -e "\033]6;1;bg;red;brightness;18\a"
+echo -e "\033]6;1;bg;green;brightness;26\a"
+echo -e "\033]6;1;bg;blue;brightness;33\a"
 
-export TERM="xterm-256color"
+# ============================================================
+# GIT
+# ============================================================
+
+alias ga='git add'
+alias gap='git add -p'
+alias g.='git add .'
+alias gp='git push'
+alias gl='git log'
+alias gst='git status'
+alias gm='git commit -m'
+alias gma='git commit -am'
+alias gb='git branch'
+alias gc='git checkout'
+alias gra='git remote add'
+alias grr='git remote rm'
+alias gpu='git pull'
+
+# ============================================================
+# NAVIGATION
+# ============================================================
+
+alias doc='cd ~/Documents'
+alias wk='cd ~/Workspace'
+alias finder='osascript /Users/antoine/Documents/openWindow.scpt'
+
+# ============================================================
+# DRUSH
+# ============================================================
+
+alias dca="vendor/bin/drush cc all"
+alias dcr="vendor/bin/drush cr"
+
+drush() {
+  if [ -f vendor/bin/drush ]; then
+    vendor/bin/drush "$@"
+  else
+    ~/.composer/vendor/bin/drush "$@"
+  fi
+}
+
+# ============================================================
+# MYSQL
+# ============================================================
+
+alias mysqldump='/Applications/MAMP/Library/bin/mysqldump'
+export PATH="/usr/local/opt/sqlite/bin:$PATH"
+
+# ============================================================
+# DDEV
+# ============================================================
+
+ddev_install_module() {
+    if [ -n "$2" ]; then
+        ddev composer require drupal/$1:$2 && ddev drush en $1
+    else
+        ddev composer require drupal/$1 && ddev drush en $1
+    fi
+}
+
+# ============================================================
+# CLAUDE CODE — Model aliases
+# ============================================================
+# claude       → Sonnet 4.6 (default, complex reasoning & code)
+# claude-lite  → Haiku 4.5  (linting, rename, simple search)
+# claude-opus  → Opus 4.7   (explicit request only)
+alias claude-lite='claude --model claude-haiku-4-5-20251001'
+alias claude-opus='claude --model claude-opus-4-7'
+
+# ============================================================
+# KIRO
+# ============================================================
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+# ============================================================
+# OLLAMA
+# ============================================================
+
+export OLLAMA_BASE_URL="http://localhost:11434"
+export OLLAMA_API_KEY=""
+export OLLAMA_ANTHROPIC_AUTH_TOKEN="ollama"
+export OLLAMA_MODEL="llama3:latest"
+
+alias okc='ANTHROPIC_BASE_URL=${OLLAMA_BASE_URL} ANTHROPIC_AUTH_TOKEN=${OLLAMA_ANTHROPIC_AUTH_TOKEN} ANTHROPIC_API_KEY="" claude --model ${OLLAMA_MODEL} --dangerously-skip-permissions'

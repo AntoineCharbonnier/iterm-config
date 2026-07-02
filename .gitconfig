@@ -1,0 +1,27 @@
+[user]
+	email = antoine@lumini.fr
+	name = Antoine Lumini
+[core]
+	fileMode = false
+	excludesfile = /Users/antoine/.gitignore_global
+	compression = 9
+[difftool "sourcetree"]
+	cmd = opendiff "$LOCAL" "$REMOTE"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh "$LOCAL" "$REMOTE" -ancestor "$BASE" -merge "$MERGED"
+	trustExitCode = true
+[http]
+	postBuffer = 1048576000
+	maxRequestBuffer = 1024M
+[sendpack]
+	sideband = false
+[ssh]
+	postBuffer = 2048M
+	maxRequestBuffer = 1024M
+[pack]
+	windowMemory = 256m
+	packSizeLimit = 256m
+[pull]
+	ff = only
+	rebase = true
